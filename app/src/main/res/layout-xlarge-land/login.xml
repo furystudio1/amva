@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:customParam="http://schemas.android.com/tools"
+    android:id="@+id/rl_suport"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:layoutDirection="ltr"
+    customParam:ignore="MissingDefaultResource">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="fitXY"
+        android:id="@+id/loginback" />
+
+    <ScrollView
+        android:id="@+id/sc_suport"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center">
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cv_cardview"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="105dp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="80dp"
+                android:layout_marginRight="105dp"
+                android:layout_marginBottom="50dp"
+                app:cardBackgroundColor="@color/black_transparent2"
+                app:cardCornerRadius="26dp">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="35dp"
+                    android:layout_marginLeft="35dp"
+                    android:layout_marginRight="35dp"
+                    android:orientation="vertical">
+
+                    <com.agntic.waves.widget.Font
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center|top"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginBottom="25dp"
+                        android:gravity="center"
+                        android:text="@string/authentication"
+                        android:textColor="@color/white"
+                        android:textSize="25sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:id="@+id/filledTextField"
+                            android:layout_width="300dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginRight="30dp"
+                            android:layout_marginBottom="15dp"
+                            app:startIconDrawable="@drawable/address"
+                            app:startIconContentDescription="@string/IP_Server"
+                            app:endIconMode="clear_text"
+                            android:hint="@string/IP_Server">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:maxLines="1"
+                                android:id="@+id/IPserver"
+                                android:textColor="#333"
+                                android:textColorHint="#666"
+                                android:textSize="20sp"
+                                />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="300dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginRight="30dp"
+                            android:layout_marginBottom="15dp"
+                            app:startIconDrawable="@drawable/address"
+                            app:startIconContentDescription="@string/IP_Web_Service"
+                            app:endIconMode="clear_text"
+                            android:hint="@string/IP_Web_Service">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:maxLines="1"
+                                android:id="@+id/IPweb"
+                                android:inputType="textUri"
+                                android:textColor="#333"
+                                android:textColorHint="#666"
+                                android:textSize="20sp"
+                                />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="300dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginRight="30dp"
+                            android:layout_marginBottom="15dp"
+                            app:startIconDrawable="@drawable/username"
+                            app:startIconContentDescription="@string/username"
+                            app:endIconMode="clear_text"
+                            android:hint="@string/username">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/username"
+                                android:inputType="text"
+                                android:maxLines="1"
+                                android:textColor="#333"
+                                android:textColorHint="#666"
+                                android:textSize="20sp"
+                                />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="300dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginRight="30dp"
+                            android:layout_marginBottom="15dp"
+                            app:startIconDrawable="@drawable/password"
+                            app:endIconMode="password_toggle"
+                            app:startIconContentDescription="@string/password"
+                            android:hint="@string/password">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/password"
+                                android:inputType="textPassword"
+                                android:maxLines="1"
+                                android:textColor="#333"
+                                android:textColorHint="#666"
+                                android:textSize="20sp"
+                                />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="300dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginRight="30dp"
+                            android:layout_marginBottom="15dp"
+                            app:startIconDrawable="@drawable/room"
+                            app:startIconContentDescription="@string/Bed_Name"
+                            app:endIconMode="clear_text"
+                            android:hint="@string/Bed_Name">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/Name"
+                                android:inputType="textShortMessage"
+                                android:maxLines="1"
+                                android:textColor="#333"
+                                android:textColorHint="#666"
+                                android:textSize="20sp"
+                                />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="300dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="30dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginRight="30dp"
+                            android:layout_marginBottom="15dp"
+                            app:endIconMode="password_toggle"
+                            app:startIconDrawable="@drawable/custome"
+                            app:startIconContentDescription="@string/Custom"
+                            android:hint="@string/Custom">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:id="@+id/custom"
+                                android:inputType="textShortMessage"
+                                android:maxLines="1"
+                                android:textColor="#333"
+                                android:textColorHint="#666"
+                                android:textSize="20sp"
+                                />
+
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <androidx.cardview.widget.CardView
+                android:id="@+id/btn_send"
+                android:layout_width="140dp"
+                android:layout_height="60dp"
+                android:layout_below="@+id/cv_cardview"
+                android:layout_centerInParent="true"
+                android:layout_marginBottom="30dp"
+                app:cardBackgroundColor="@color/colorPrimaryDark"
+                android:focusableInTouchMode="true"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="15dp">
+
+                <com.agntic.waves.widget.Font
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:id="@+id/loginsave"
+                    android:gravity="center"
+                    android:text="@string/Save"
+                    android:textColor="@color/text_color_2" />
+
+            </androidx.cardview.widget.CardView>
+
+
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>
