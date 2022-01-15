@@ -86,6 +86,7 @@
                                 android:textColor="#333"
                                 android:textColorHint="#666"
                                 android:textSize="14sp"
+                                android:focusableInTouchMode="true"
                                 />
 
                         </com.google.android.material.textfield.TextInputLayout>
@@ -102,6 +103,7 @@
                             app:startIconDrawable="@drawable/address"
                             app:startIconContentDescription="@string/IP_Web_Service"
                             app:endIconMode="clear_text"
+                            android:id="@+id/filledTextField2"
                             android:hint="@string/IP_Web_Service">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -113,6 +115,7 @@
                                 android:textColor="#333"
                                 android:textColorHint="#666"
                                 android:textSize="14sp"
+                                android:focusableInTouchMode="true"
                                 />
 
                         </com.google.android.material.textfield.TextInputLayout>
@@ -138,6 +141,7 @@
                             app:startIconDrawable="@drawable/username"
                             app:startIconContentDescription="@string/username"
                             app:endIconMode="clear_text"
+                            android:id="@+id/filledTextField3"
                             android:hint="@string/username">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -149,6 +153,7 @@
                                 android:textColor="#333"
                                 android:textColorHint="#666"
                                 android:textSize="14sp"
+                                android:focusableInTouchMode="true"
                                 />
 
                         </com.google.android.material.textfield.TextInputLayout>
@@ -164,6 +169,7 @@
                             app:endIconMode="password_toggle"
                             app:startIconDrawable="@drawable/password"
                             app:startIconContentDescription="@string/password"
+                            android:id="@+id/filledTextField4"
                             android:hint="@string/password">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -175,6 +181,7 @@
                                 android:textColor="#333"
                                 android:textColorHint="#666"
                                 android:textSize="14sp"
+                                android:focusableInTouchMode="true"
                                 />
 
                         </com.google.android.material.textfield.TextInputLayout>
@@ -199,6 +206,7 @@
                             app:startIconDrawable="@drawable/room"
                             app:startIconContentDescription="@string/Bed_Name"
                             app:endIconMode="clear_text"
+                            android:id="@+id/filledTextField5"
                             android:hint="@string/Bed_Name">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -210,6 +218,7 @@
                                 android:textColor="#333"
                                 android:textColorHint="#666"
                                 android:textSize="14sp"
+                                android:focusableInTouchMode="true"
                                 />
 
                         </com.google.android.material.textfield.TextInputLayout>
@@ -226,6 +235,7 @@
                             app:endIconMode="password_toggle"
                             app:startIconDrawable="@drawable/custome"
                             app:startIconContentDescription="@string/Custom"
+                            android:id="@+id/filledTextField6"
                             android:hint="@string/Custom">
 
                             <com.google.android.material.textfield.TextInputEditText
@@ -237,6 +247,7 @@
                                 android:textColor="#333"
                                 android:textColorHint="#666"
                                 android:textSize="14sp"
+                                android:focusableInTouchMode="true"
                                 />
 
                         </com.google.android.material.textfield.TextInputLayout>

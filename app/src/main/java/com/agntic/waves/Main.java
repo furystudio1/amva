@@ -1,7 +1,9 @@
 package com.agntic.waves;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.animation.ObjectAnimator;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -9,18 +11,16 @@ import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Paint;
 import android.graphics.Typeface;
-import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Html;
 import android.text.format.DateFormat;
 import android.text.format.Time;
 import android.util.Base64;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -38,27 +38,19 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.leanback.app.GuidedStepFragment;
-import androidx.leanback.widget.GuidanceStylist;
-import androidx.leanback.widget.GuidedAction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
-import com.agntic.waves.Dialog.BaseGuidedStepFragment;
 import com.agntic.waves.Dialog.Dialog;
-import com.agntic.waves.Dialog.DialogContract;
-import com.agntic.waves.ListVOD.VODdetailVideo;
 import com.agntic.waves.ListVOD.VODvideo;
-import com.agntic.waves.ListVOD.adapters.MobileAdapter;
-import com.agntic.waves.ListVOD.models.Brand;
-import com.agntic.waves.ListVOD.models.Mobile;
 import com.agntic.waves.Model.Video;
 import com.agntic.waves.Model.VideoAdapter;
 import com.agntic.waves.Music.MusicList;
 import com.agntic.waves.db.DatabaseManager;
 import com.agntic.waves.db.Person;
+import com.agntic.waves.khadamat.khadamat;
 import com.agntic.waves.widget.Clock;
 import com.agntic.waves.widget.OnClockTickListner;
 import com.agntic.waves.widget.PermissionHandler;
@@ -74,7 +66,6 @@ import com.android.volley.toolbox.BasicNetwork;
 import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.Volley;
 import com.bugsnag.android.Bugsnag;
 import com.bumptech.glide.Glide;
 import com.pnikosis.materialishprogress.ProgressWheel;
@@ -93,10 +84,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import jp.wasabeef.glide.transformations.BlurTransformation;
-
-import static com.bumptech.glide.request.RequestOptions.bitmapTransform;
 
 public class Main extends Activity {
 
@@ -119,6 +106,7 @@ public class Main extends Activity {
     static TextView namechannelmenu;
     TextView namechannelmenu2;
 
+    boolean anim = true;
     boolean bardo = true;
 
     RelativeLayout rl_suport, mainBG2;
@@ -172,7 +160,7 @@ public class Main extends Activity {
     String Url;
     String Url2;
 
-    int where,from;
+    int where,from,cachesave;
 
     private List<Video> videos = new ArrayList<>();
     public static RecyclerView recyclerView;
@@ -185,7 +173,6 @@ public class Main extends Activity {
     private static int likenumber;
     private static String lastchannelset;
 
-    static DrawerLayout drawerlayout;
     public static Activity fa;
 
     // Get Save
@@ -211,6 +198,8 @@ public class Main extends Activity {
     RelativeLayout tvinfoRe, tvlistRe;
 
     CardView view11,view,view3w,view4,view3;
+
+    RelativeLayout moveRight,moveleft;
 
     public static void deleteCache(Context context) {
         try {
@@ -244,6 +233,20 @@ public class Main extends Activity {
 
     StaggeredGridLayoutManager staggeredGridLayoutManager;
 
+
+    class CacheAsync extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            // This method must be called on a background thread.
+            Glide.get(Main.this).clearDiskCache();
+            return null;
+        }
+    }
+
+
+
+
+
     @SuppressLint("ClickableViewAccessibility")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -253,8 +256,11 @@ public class Main extends Activity {
 
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         //start activ
-        setContentView(R.layout.root_listtv_livetv);
+        setContentView(R.layout.main);
 
+
+        //clear image cache
+        //new CacheAsync().execute();
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
@@ -316,7 +322,9 @@ public class Main extends Activity {
             favoritelist = one_play_preferences.getBoolean("favoritelist", false);
             oneplay = one_play_preferences.getInt("one_play_app", 3);
             language = one_play_preferences.getInt("Language", 1);
+            cachesave = one_play_preferences.getInt("cache", 0);
             firsttime = one_play_preferences.getBoolean("60", true);
+
         } catch (Exception e) {
             Bugsnag.notify(e);
             e.printStackTrace();
@@ -372,6 +380,8 @@ public class Main extends Activity {
             mainBG2 = (RelativeLayout) findViewById(R.id.mainBG2);
             tvinfoRe = (RelativeLayout)findViewById(R.id.tvinfoRe);
             tvlistRe = (RelativeLayout)findViewById(R.id.tvlistRe);
+            moveRight = (RelativeLayout)findViewById(R.id.moveRight);
+            moveleft = (RelativeLayout)findViewById(R.id.moveleft);
             version1 = (TextView) findViewById(R.id.version);
             firstcapaniname1 = (TextView) findViewById(R.id.firstcapaniname);
             firstname1 = (TextView) findViewById(R.id.firstname);
@@ -389,7 +399,6 @@ public class Main extends Activity {
             toplist = (TextView) findViewById(R.id.toplist);
             datetv = (TextView) findViewById(R.id.datetv);
             mVideoLayout = findViewById(R.id.video_layout);
-            drawerlayout = (DrawerLayout) findViewById(R.id.root_page_1);
             progress_wheel = (ProgressWheel) findViewById(R.id.progress_wheel);
             view11 = (CardView) findViewById(R.id.view11);
             view  = (CardView) findViewById(R.id.view);
@@ -403,6 +412,7 @@ public class Main extends Activity {
             Bugsnag.notify(e);
             e.printStackTrace();
         }
+
 
         if (language == 1){
             //farsi
@@ -782,6 +792,11 @@ public class Main extends Activity {
             @Override
             public void onClick(View v) {
                 // button 1 was clicked!
+
+                Intent uou = new Intent(Main.this, khadamat.class);
+                startActivity(uou);
+                Main.this.finish();
+
             }
         });
 
@@ -829,22 +844,47 @@ public class Main extends Activity {
             public void onClick(View v) {
                 // back
                 try {
-                    if (drawerlayout.isDrawerOpen(Gravity.LEFT)) {
-                        if (drawerlayout.isDrawerOpen(Gravity.RIGHT)) {
-                            drawerlayout.closeDrawer(Gravity.LEFT);
-                            drawerlayout.closeDrawer(Gravity.RIGHT);
-                        } else {
-                            drawerlayout.closeDrawer(Gravity.LEFT);
-                        }
-                    } else {
-                        if (drawerlayout.isDrawerOpen(Gravity.RIGHT)) {
-                            drawerlayout.closeDrawer(Gravity.RIGHT);
-                        } else {
-                            drawerlayout.openDrawer(Gravity.LEFT);
-                            drawerlayout.openDrawer(Gravity.RIGHT);
-                        }
+                    if (anim){
+                        anim = false;
+
+                        ObjectAnimator animation = ObjectAnimator.ofFloat(moveleft, "translationX", -200f);
+                        animation.setDuration(500);
+                        animation.start();
+
+                        ObjectAnimator animation2 = ObjectAnimator.ofFloat(moveRight, "translationX", 200f);
+                        animation2.setDuration(500);
+                        animation2.start();
+
+                        moveRight.animate()
+                                .alpha(0f)
+                                .setDuration(600)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        moveRight.setVisibility(View.INVISIBLE);
+                                    }
+                                });
+                        moveleft.animate()
+                                .alpha(0f)
+                                .setDuration(600)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        moveleft.setVisibility(View.INVISIBLE);
+                                    }
+                                });
+
+                        new Handler().postDelayed(new Thread() {
+
+                            @Override
+                            public void run() {
+                                super.run();
+
+                                Visible(1);
+
+                            }
+                        }, 505);
                     }
-                    Visible(1);
 
                 } catch (Exception e) {
                     Bugsnag.notify(e);
@@ -1042,21 +1082,7 @@ public class Main extends Activity {
                 if (where == 5) {
                     try {
                         //sliding view
-                        if (drawerlayout.isDrawerOpen(Gravity.LEFT)) {
-                            if (drawerlayout.isDrawerOpen(Gravity.RIGHT)) {
-                                drawerlayout.closeDrawer(Gravity.LEFT);
-                                drawerlayout.closeDrawer(Gravity.RIGHT);
-                            } else {
-                                drawerlayout.closeDrawer(Gravity.LEFT);
-                            }
-                        } else {
-                            if (drawerlayout.isDrawerOpen(Gravity.RIGHT)) {
-                                drawerlayout.closeDrawer(Gravity.RIGHT);
-                            } else {
-                                drawerlayout.openDrawer(Gravity.LEFT);
-                                drawerlayout.openDrawer(Gravity.RIGHT);
-                            }
-                        }
+
                     } catch (Exception e) {
                         Bugsnag.notify(e);
                         e.printStackTrace();
@@ -1174,6 +1200,42 @@ public class Main extends Activity {
                 try {
 
                     Visible(5);
+
+                    if (anim){
+
+                        anim = false;
+
+                        //close bar
+                        moveRight.setVisibility(View.VISIBLE);
+                        moveleft.setVisibility(View.VISIBLE);
+
+                        ObjectAnimator animation = ObjectAnimator.ofFloat(moveleft, "translationX", -100f);
+                        animation.setDuration(500);
+                        animation.start();
+
+                        ObjectAnimator animation2 = ObjectAnimator.ofFloat(moveRight, "translationX", 100f);
+                        animation2.setDuration(500);
+                        animation2.start();
+
+                        moveRight.animate()
+                                .alpha(0f)
+                                .setDuration(600)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        moveRight.setVisibility(View.INVISIBLE);
+                                    }
+                                });
+                        moveleft.animate()
+                                .alpha(0f)
+                                .setDuration(600)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        moveleft.setVisibility(View.INVISIBLE);
+                                    }
+                                });
+                    }
 
                 } catch (Exception e) {
                     Bugsnag.notify(e);
@@ -1578,17 +1640,20 @@ public class Main extends Activity {
         });
     }
 
+
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         try {
             mMediaPlayer.release();
             mLibVLC.release();
             c.StopTick();
+            finish();
+            Main.this.finish();
         } catch (Exception e) {
             Bugsnag.notify(e);
             e.printStackTrace();
         }
+        super.onDestroy();
     }
 
     @Override
@@ -1598,6 +1663,7 @@ public class Main extends Activity {
             mMediaPlayer.stop();
             mMediaPlayer.detachViews();
             c.StopTick();
+            Main.this.finish();
         } catch (Exception e) {
             Bugsnag.notify(e);
             e.printStackTrace();
@@ -1799,39 +1865,80 @@ public class Main extends Activity {
 
 
             if (doubleBackToExitPressedOnce2) {
-                if (drawerlayout.isDrawerOpen(Gravity.LEFT)) {
-                    if (drawerlayout.isDrawerOpen(Gravity.RIGHT)) {
-                        drawerlayout.closeDrawer(Gravity.LEFT);
-                        drawerlayout.closeDrawer(Gravity.RIGHT);
-                    } else {
-                        drawerlayout.closeDrawer(Gravity.LEFT);
-                    }
-                } else {
-                    if (drawerlayout.isDrawerOpen(Gravity.RIGHT)) {
-                        drawerlayout.closeDrawer(Gravity.RIGHT);
-                    }
-                }
-                Visible(1);
-            }else {
-                if (doubleBackToExitPressedOnce3){
-                    doubleBackToExitPressedOnce3 = false;
-                    if (drawerlayout.isDrawerOpen(Gravity.LEFT)) {
-                        if (drawerlayout.isDrawerOpen(Gravity.RIGHT)) {
-                            drawerlayout.closeDrawer(Gravity.LEFT);
-                            drawerlayout.closeDrawer(Gravity.RIGHT);
-                        } else {
-                            drawerlayout.closeDrawer(Gravity.LEFT);
-                        }
-                    } else {
-                        if (drawerlayout.isDrawerOpen(Gravity.RIGHT)) {
-                            drawerlayout.closeDrawer(Gravity.RIGHT);
-                        } else {
-                            drawerlayout.openDrawer(Gravity.LEFT);
-                            drawerlayout.openDrawer(Gravity.RIGHT);
-                        }
-                    }
-                }
+                if (anim){
+                    anim = false;
 
+                    ObjectAnimator animation = ObjectAnimator.ofFloat(moveleft, "translationX", -100f);
+                    animation.setDuration(500);
+                    animation.start();
+
+                    ObjectAnimator animation2 = ObjectAnimator.ofFloat(moveRight, "translationX", 100f);
+                    animation2.setDuration(500);
+                    animation2.start();
+
+                    moveRight.animate()
+                            .alpha(0f)
+                            .setDuration(600)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    moveRight.setVisibility(View.INVISIBLE);
+                                }
+                            });
+                    moveleft.animate()
+                            .alpha(0f)
+                            .setDuration(600)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    moveleft.setVisibility(View.INVISIBLE);
+                                }
+                            });
+
+                    new Handler().postDelayed(new Thread() {
+
+                        @Override
+                        public void run() {
+                            super.run();
+
+                            Visible(1);
+
+                        }
+                    }, 505);
+                }else {
+                    Visible(1);
+                }
+            }else {
+                if (anim){
+                    anim = false;
+
+                    ObjectAnimator animation = ObjectAnimator.ofFloat(moveleft, "translationX", -100f);
+                    animation.setDuration(500);
+                    animation.start();
+
+                    ObjectAnimator animation2 = ObjectAnimator.ofFloat(moveRight, "translationX", 100f);
+                    animation2.setDuration(500);
+                    animation2.start();
+
+                    moveRight.animate()
+                            .alpha(0f)
+                            .setDuration(600)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    moveRight.setVisibility(View.INVISIBLE);
+                                }
+                            });
+                    moveleft.animate()
+                            .alpha(0f)
+                            .setDuration(600)
+                            .setListener(new AnimatorListenerAdapter() {
+                                @Override
+                                public void onAnimationEnd(Animator animation) {
+                                    moveleft.setVisibility(View.INVISIBLE);
+                                }
+                            });
+                }
             }
             doubleBackToExitPressedOnce2 = true;
 
@@ -1878,6 +1985,7 @@ public class Main extends Activity {
                 .replace("PM", "بعد از ظهر")
                 .replace("AM", "قبل از ظهر");
     }
+
 
     @Override
     protected void onStart() {
@@ -2125,7 +2233,6 @@ public class Main extends Activity {
 
         favorite();
 
-        drawerlayout.closeDrawers();
     }
 
     //set icon favorite
@@ -2167,8 +2274,9 @@ public class Main extends Activity {
             wb2.setVisibility(View.INVISIBLE);
             tvinfoRe.setVisibility(View.INVISIBLE);
             tvlistRe.setVisibility(View.INVISIBLE);
+            moveRight.setVisibility(View.INVISIBLE);
+            moveleft.setVisibility(View.INVISIBLE);
 
-            drawerlayout.closeDrawers();
             //focus
             ramz.setFocusable(true);
             esm.setFocusable(true);
@@ -2197,7 +2305,8 @@ public class Main extends Activity {
             wb2.setVisibility(View.INVISIBLE);
             tvinfoRe.setVisibility(View.INVISIBLE);
             tvlistRe.setVisibility(View.INVISIBLE);
-            drawerlayout.closeDrawers();
+            moveRight.setVisibility(View.INVISIBLE);
+            moveleft.setVisibility(View.INVISIBLE);
         } else if (n == 3) {
             //hide start, hide main page, show web1
             where = 3;
@@ -2210,6 +2319,8 @@ public class Main extends Activity {
             tvinfoRe.setVisibility(View.INVISIBLE);
             tvlistRe.setVisibility(View.INVISIBLE);
 
+            moveRight.setVisibility(View.INVISIBLE);
+            moveleft.setVisibility(View.INVISIBLE);
             //focus
             ramz.setFocusable(false);
             esm.setFocusable(false);
@@ -2226,7 +2337,6 @@ public class Main extends Activity {
             listtv.setFocusable(false);
             hometv.setFocusable(false);
             video_surface_frame_Menu.setFocusable(false);
-            drawerlayout.closeDrawers();
         } else if (n == 4) {
             //hide start, hide main page, show web2
             where = 4;
@@ -2239,6 +2349,8 @@ public class Main extends Activity {
             tvinfoRe.setVisibility(View.INVISIBLE);
             tvlistRe.setVisibility(View.INVISIBLE);
 
+            moveRight.setVisibility(View.INVISIBLE);
+            moveleft.setVisibility(View.INVISIBLE);
             //focus
             ramz.setFocusable(false);
             esm.setFocusable(false);
@@ -2255,7 +2367,6 @@ public class Main extends Activity {
             listtv.setFocusable(false);
             hometv.setFocusable(false);
             video_surface_frame_Menu.setFocusable(false);
-            drawerlayout.closeDrawers();
 
         } else if (n == 5) {
             //hide start, hide main page, Hide web2, show Stream
@@ -2301,40 +2412,84 @@ public class Main extends Activity {
 
                 if (where == 5){
 
-                    if (drawerlayout.isDrawerOpen(Gravity.LEFT)) {
-                        if (drawerlayout.isDrawerOpen(Gravity.RIGHT)) {
-                            drawerlayout.closeDrawer(Gravity.LEFT);
-                            drawerlayout.closeDrawer(Gravity.RIGHT);
-                        } else {
-                            drawerlayout.closeDrawer(Gravity.LEFT);
-                        }
-                    } else {
-                        if (drawerlayout.isDrawerOpen(Gravity.RIGHT)) {
-                            drawerlayout.closeDrawer(Gravity.RIGHT);
-                        } else {
-                            drawerlayout.openDrawer(Gravity.LEFT);
-                            drawerlayout.openDrawer(Gravity.RIGHT);
+                    if (anim){
+                        anim = false;
 
-                            RecyclerView.SmoothScroller smoothScroller = new
-                                    LinearSmoothScroller(this.getApplicationContext()) {
-                                        @Override
-                                        protected int getVerticalSnapPreference() {
-                                            return LinearSmoothScroller.SNAP_TO_START;
-                                        }
-                                    };
-                            smoothScroller.setTargetPosition(VideoAdapter.posl);
-                            recyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
-                            videoAdapter.notifyItemChanged(VideoAdapter.posl);
+                        //close bar
 
-                        }
+                        ObjectAnimator animation = ObjectAnimator.ofFloat(moveleft, "translationX", -100f);
+                        animation.setDuration(500);
+                        animation.start();
+
+                        ObjectAnimator animation2 = ObjectAnimator.ofFloat(moveRight, "translationX", 100f);
+                        animation2.setDuration(500);
+                        animation2.start();
+
+                        moveRight.animate()
+                                .alpha(0f)
+                                .setDuration(600)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        moveRight.setVisibility(View.INVISIBLE);
+                                    }
+                                });
+                        moveleft.animate()
+                                .alpha(0f)
+                                .setDuration(600)
+                                .setListener(new AnimatorListenerAdapter() {
+                                    @Override
+                                    public void onAnimationEnd(Animator animation) {
+                                        moveleft.setVisibility(View.INVISIBLE);
+                                    }
+                                });
+
+                    }else {
+
+                        anim = true;
+                        //close bar
+                        moveRight.setVisibility(View.VISIBLE);
+                        moveRight.setAlpha(0f);
+                        moveleft.setVisibility(View.VISIBLE);
+                        moveleft.setAlpha(0f);
+
+                        moveRight.animate()
+                                .alpha(1f)
+                                .setDuration(250)
+                                .setListener(null);
+
+                        moveleft.animate()
+                                .alpha(1f)
+                                .setDuration(250)
+                                .setListener(null);
+
+
+                            ObjectAnimator animation = ObjectAnimator.ofFloat(moveleft, "translationX", 0f);
+                        animation.setDuration(500);
+                        animation.start();
+
+                        ObjectAnimator animation2 = ObjectAnimator.ofFloat(moveRight, "translationX", 0f);
+                        animation2.setDuration(500);
+                        animation2.start();
+
+                        RecyclerView.SmoothScroller smoothScroller = new
+                                LinearSmoothScroller(this.getApplicationContext()) {
+                                    @Override
+                                    protected int getVerticalSnapPreference() {
+                                        return LinearSmoothScroller.SNAP_TO_START;
+                                    }
+                                };
+                        smoothScroller.setTargetPosition(VideoAdapter.posl);
+                        recyclerView.getLayoutManager().startSmoothScroll(smoothScroller);
+                        videoAdapter.notifyItemChanged(VideoAdapter.posl);
+
                     }
 
-                    /*if (!drawerlayout.isDrawerOpen(Gravity.LEFT)) {
 
+                    /*if (!drawerlayout.isDrawerOpen(Gravity.LEFT)) {
                         //recyclerView.getLayoutManager().scrollToPosition(14);
                         drawerlayout.openDrawer(Gravity.LEFT);
                         drawerlayout.openDrawer(Gravity.RIGHT);
-
                         RecyclerView.SmoothScroller smoothScroller = new
                                 LinearSmoothScroller(this.getApplicationContext()) {
                                     @Override
@@ -2351,7 +2506,7 @@ public class Main extends Activity {
                 break;
             case KeyEvent.KEYCODE_DPAD_DOWN:
                 if (where == 5){
-                    if (!drawerlayout.isDrawerOpen(Gravity.LEFT)) {
+                    if (!anim) {
                         VideoAdapter.pos = VideoAdapter.pos <= 0 ? VideoAdapter.videoList.size() - 1 : VideoAdapter.pos - 1;
                         final Video video = VideoAdapter.videoList.get(VideoAdapter.pos);
                         Main.TV(video.getUrl(),video.getName());
@@ -2361,7 +2516,7 @@ public class Main extends Activity {
                 break;
             case KeyEvent.KEYCODE_DPAD_UP:
                 if (where == 5){
-                    if (!drawerlayout.isDrawerOpen(Gravity.LEFT)) {
+                    if (!anim) {
                         VideoAdapter.pos = VideoAdapter.pos >= VideoAdapter.videoList.size() - 1 ? 0 : VideoAdapter.pos + 1;
                         final Video video = VideoAdapter.videoList.get(VideoAdapter.pos);
                         Main.TV(video.getUrl(),video.getName());
@@ -2370,7 +2525,7 @@ public class Main extends Activity {
                 break;
             case KeyEvent.KEYCODE_DPAD_RIGHT:
                 if (where == 5){
-                    if (!drawerlayout.isDrawerOpen(Gravity.LEFT)) {
+                    if (!anim) {
                         audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
                                 AudioManager.ADJUST_RAISE, AudioManager.FLAG_SHOW_UI);
                     }
@@ -2378,7 +2533,7 @@ public class Main extends Activity {
                 break;
             case KeyEvent.KEYCODE_DPAD_LEFT:
                 if (where == 5) {
-                    if (!drawerlayout.isDrawerOpen(Gravity.LEFT)) {
+                    if (!anim) {
                         audio.adjustStreamVolume(AudioManager.STREAM_MUSIC,
                                 AudioManager.ADJUST_LOWER, AudioManager.FLAG_SHOW_UI);
                     }
@@ -2401,7 +2556,7 @@ public class Main extends Activity {
     //get all data from rest
     public void auth_update() {
         try {
-            String url = "http://188.158.121.78:81/Amvaj/update/json.php?auth=" + Auth;
+            String url = "http://188.158.121.78/Amvaj/update/json.php?auth=" + Auth;
 
             JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, url, null, new Response.Listener<JSONObject>() {
 
@@ -2411,6 +2566,7 @@ public class Main extends Activity {
                         //VolleyLog.v("Response:%n %s", response.toString(4));
 
                         String version = "",urlApk = null;
+                        int cache = 0;
                         if (!response.isNull("auth")) {
                             AuthServer = response.getString("auth");
                         }
@@ -2419,6 +2575,21 @@ public class Main extends Activity {
                         }
                         if (!response.isNull("urlApk")) {
                             urlApk = response.getString("urlApk");
+                        }
+                        if (!response.isNull("cache")) {
+                            cache = response.getInt("cache");
+                        }
+
+
+                        if (cachesave == cache){
+
+                        }else {
+
+                            //clear image cache
+                            new CacheAsync().execute();
+
+                            one_play_editor.putInt("cache", cache);
+                            one_play_editor.apply();
                         }
 
                         if (AuthServer.equals(Auth)){
@@ -2443,6 +2614,9 @@ public class Main extends Activity {
                             one_play_editor.apply();
                             updateTab.setVisibility(View.VISIBLE);
                         }
+
+
+
                         //MobileAdapter.notifyDataSetChanged();
                         //videoAdapter.setLoading(false);
                     } catch (JSONException e) {
@@ -2482,6 +2656,7 @@ public class Main extends Activity {
                         //VolleyLog.v("Response:%n %s", response.toString(4));
 
                         String version = "",urlApk = null;
+                        int cache = 0;
                         if (!response.isNull("auth")) {
                             AuthServer = response.getString("auth");
                         }
@@ -2490,6 +2665,21 @@ public class Main extends Activity {
                         }
                         if (!response.isNull("urlApk")) {
                             urlApk = response.getString("urlApk");
+                        }
+                        if (!response.isNull("cache")) {
+                            cache = response.getInt("cache");
+                        }
+
+                        if (cachesave == cache){
+
+                        }else {
+
+                            Log.e("  cachesave ", String.valueOf(cache));
+                            //clear image cache
+                            new CacheAsync().execute();
+
+                            one_play_editor.putInt("cache", cache);
+                            one_play_editor.apply();
                         }
 
                         if (AuthServer.equals(Auth)){
@@ -2514,6 +2704,9 @@ public class Main extends Activity {
                             one_play_editor.apply();
                             updateTab.setVisibility(View.VISIBLE);
                         }
+
+
+
                         //MobileAdapter.notifyDataSetChanged();
                         //videoAdapter.setLoading(false);
                     } catch (JSONException e) {

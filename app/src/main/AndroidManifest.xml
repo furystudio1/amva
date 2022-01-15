@@ -65,6 +65,15 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".Testmove"
+            android:screenOrientation="landscape"
+            android:keepScreenOn="true"
+            android:theme="@style/AppThemeStream">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+            </intent-filter>
+        </activity>
+
 
         <activity android:name=".Testfoucs"
             android:screenOrientation="landscape"
@@ -129,6 +138,39 @@
         </activity>
 
         <activity android:name=".Music.MusicList"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppThemeStream"
+            android:keepScreenOn="true"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".khadamat.khadamat"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppThemeStream"
+            android:keepScreenOn="true"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".khadamat.Returant"
+            android:screenOrientation="landscape"
+            android:theme="@style/AppThemeStream"
+            android:keepScreenOn="true"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|screenLayout|smallestScreenSize|uiMode">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+            </intent-filter>
+        </activity>
+
+        <activity android:name=".khadamat.Coffe"
             android:screenOrientation="landscape"
             android:theme="@style/AppThemeStream"
             android:keepScreenOn="true"

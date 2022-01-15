@@ -259,7 +259,7 @@ public class MusicList extends AppCompatActivity {
                             .load(urlImg1)
                             .transition(DrawableTransitionOptions.withCrossFade())
                             //.diskCacheStrategy(DiskCacheStrategy.ALL)
-                            .apply(bitmapTransform(new BlurTransformation(42)))
+                            .apply(bitmapTransform(new BlurTransformation(1)))
                             .into(bg_list_music);
 
                     v.animate().scaleY(1.2f).scaleX(1.2f).start();
